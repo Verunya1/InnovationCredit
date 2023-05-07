@@ -1,6 +1,6 @@
 package com.example.innovationcredit.exception;
 
-import com.example.innovationcredit.model.ErrorCode;
+import com.example.innovationcredit.model.enums.ErrorCode;
 import lombok.Getter;
 
 @Getter

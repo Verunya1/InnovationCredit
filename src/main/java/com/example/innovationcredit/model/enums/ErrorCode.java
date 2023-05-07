@@ -1,4 +1,4 @@
-package com.example.innovationcredit.model;
+package com.example.innovationcredit.model.enums;
 
 public enum ErrorCode {
     TARIFF_NOT_FOUND,
