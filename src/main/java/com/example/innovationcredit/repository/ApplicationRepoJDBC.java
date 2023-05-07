@@ -1,14 +1,5 @@
 package com.example.innovationcredit.repository;
 
-import com.example.innovationcredit.entity.Application;
-import com.example.innovationcredit.entity.DataEntity;
-import com.example.innovationcredit.mapper.TariffMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 /*
 
 @Component

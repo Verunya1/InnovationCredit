@@ -1,14 +1,14 @@
 package com.example.innovationcredit.repository;
 
-import com.example.innovationcredit.entity.TariffEntity;
-import com.example.innovationcredit.mapper.TariffMapper;
+import com.example.innovationcredit.model.entity.TariffEntity;
+//import com.example.innovationcredit.model.mapper.TariffMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/*
 @Component
 @RequiredArgsConstructor
 public class TariffRepoJDBC {
@@ -18,3 +18,4 @@ public class TariffRepoJDBC {
         return jdbcTemplate.query("SELECT * FROM tariff_id WHERE id=?", new TariffMapper());
     }
 }
+*/

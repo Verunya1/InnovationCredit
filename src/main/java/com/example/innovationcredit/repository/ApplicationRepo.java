@@ -1,10 +1,10 @@
 package com.example.innovationcredit.repository;
 
-import com.example.innovationcredit.entity.Application;
+import com.example.innovationcredit.model.entity.Application;
 
 public interface ApplicationRepo {
 
-    void supply(Application application); // хз что здесь должно передаваться
+    void supply(Application application);
 
     Application getStatus(long userId);
 

@@ -1,10 +1,11 @@
-package com.example.innovationcredit.mapper;
+package com.example.innovationcredit.model.mapper;
 
-import com.example.innovationcredit.entity.TariffEntity;
+import com.example.innovationcredit.model.entity.TariffEntity;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+/*
 
 public class TariffMapper implements RowMapper<TariffEntity> {
     @Override
@@ -18,3 +19,4 @@ public class TariffMapper implements RowMapper<TariffEntity> {
         return tariff;
     }
 }
+*/

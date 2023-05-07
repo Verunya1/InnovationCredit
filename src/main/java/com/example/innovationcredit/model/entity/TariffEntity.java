@@ -1,4 +1,4 @@
-package com.example.innovationcredit.entity;
+package com.example.innovationcredit.model.entity;
 
 
 import jakarta.persistence.*;
@@ -22,11 +22,11 @@ public class TariffEntity {
     String type;
 
     @Column
-    String interest_rate;
+    String interestRate;
 
-    public TariffEntity(long id, String type, String interest_rate) {
+    public TariffEntity(long id, String type, String interestRate) {
         this.id = id;
         this.type = type;
-        this.interest_rate = interest_rate;
+        this.interestRate = interestRate;
     }
 }

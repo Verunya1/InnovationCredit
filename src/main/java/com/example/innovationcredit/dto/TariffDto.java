@@ -1,10 +1,11 @@
 package com.example.innovationcredit.dto;
 
-import com.example.innovationcredit.api.response.Dto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record TariffDto(
         long id,
         String type,
-        String interest_rate
-) implements Dto {
+        @JsonProperty("interest_rate")
+        String interestRate
+) {
 }
