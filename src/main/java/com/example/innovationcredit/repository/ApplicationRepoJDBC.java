@@ -1,6 +1,6 @@
+/*
 package com.example.innovationcredit.repository;
 
-/*
 
 @Component
 @RequiredArgsConstructor
@@ -26,4 +26,6 @@ public class ApplicationRepoJDBC {
 //        return jdbcTemplate.update("delete from loan_order WHERE id=?", id", new UserMapper());
     }
 }
+
+
 */

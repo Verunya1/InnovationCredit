@@ -4,7 +4,7 @@ databaseChangeLog:
       author: VeraRG
       changes:
         - createTable:
-            tableName: tarrif_id
+            tableName: tariffs
             columns:
               - column:
                   name: id
@@ -50,8 +50,6 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-              - addForeignKeyConstraint:
-                  baseColumnNames: tarrif_id
               - column:
                   name: credit_rating
                   type: double
@@ -72,13 +70,19 @@ databaseChangeLog:
                   type: datetime2
                   constraints:
                     nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: tarrif_id
+            baseTableName: loan_order
+            constraintName: loan_order_tarif_fk
+            referencedTableName: tariffs
+            referencedColumnNames: id
   - changeSet:
-      id: add_data_tariff_id_table
+      id: add_data_tariffs_table
       author: VeraRG
       comment: "add"
       changes:
         - insert:
-            tableName: tarrif_id
+            tableName: tariffs
             columns:
                   - column:
                       name: id
@@ -90,7 +94,7 @@ databaseChangeLog:
                       name: interest_rate
                       value: "11.9%"
         - insert:
-            tableName: tarrif_id
+            tableName: tariffs
             columns:
                   - column:
                       name: id
@@ -102,7 +106,7 @@ databaseChangeLog:
                       name: interest_rate
                       value: "6.7%"
         - insert:
-            tableName: tarrif_id
+            tableName: tariffs
             columns:
                   - column:
                       name: id
@@ -113,19 +117,3 @@ databaseChangeLog:
                   - column:
                       name: interest_rate
                       value: "10.0%"
-
-  - changeSet:
-      id: renameColumn
-      author: VeraRG
-      changes:
-        - renameTable:
-            newTableName: tariff_id
-            oldTableName: tarrif_id
-  - changeSet:
-      id: renameColumn2
-      author: VeraRG
-      changes:
-        - renameColumn:
-            newColumnName: tariff_id
-            oldColumnName: tarrif_id
-            tableName: loan_order

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "tariff_id")
+@Table(name = "tariffs")
 public class TariffEntity {
 
     @Id
