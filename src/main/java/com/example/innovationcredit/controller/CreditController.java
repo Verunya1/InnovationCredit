@@ -2,12 +2,18 @@ package com.example.innovationcredit.controller;
 
 import com.example.innovationcredit.api.response.DataResponse;
 import com.example.innovationcredit.api.response.TariffListResponse;
+import com.example.innovationcredit.exception.LoanProcessException;
+import com.example.innovationcredit.model.ErrorCode;
 import com.example.innovationcredit.model.mapper.TariffMapperInterface;
 import com.example.innovationcredit.repository.TariffRepo;
 import com.example.innovationcredit.repository.TariffRepoJDBC;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.loader.ast.internal.LoadPlan;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.stream.Collectors;
 
@@ -21,6 +27,9 @@ public class CreditController {
 
     @GetMapping("/getTariffs")
     public ResponseEntity<DataResponse<TariffListResponse>> getTariffs() {
+   /*     if(true) {
+            throw new LoanProcessException(ErrorCode.LOAN_CONSIDERATION, "message");
+        }*/
         return ResponseEntity.ok(new DataResponse<>(new TariffListResponse(tariffRepo.findAll().stream().map(tariffMapper::entityToDto).collect(Collectors.toList()))));
     }
 
