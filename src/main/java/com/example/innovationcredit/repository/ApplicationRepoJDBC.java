@@ -1,4 +1,4 @@
-/*package com.example.innovationcredit.repository;
+package com.example.innovationcredit.repository;
 
 
 import com.example.innovationcredit.exception.LoanProcessException;
@@ -11,7 +11,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.example.innovationcredit.model.enums.StatusCode.*;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +24,15 @@ public class ApplicationRepoJDBC {
     private final JdbcTemplate jdbcTemplate;
     private final TariffMapper tariffMapper;
 
-    private final String SQL_FIND_BY_TARIFF_ID = "select * from tariffs where tariff_id = ?";
-    private final String SQL_FIND_BY_USER_ID = "select * from loan_order where user_id = ?";
+    private final String SQL_FIND_BY_TARIFF_ID = "select * from tariffs where id = ?";
 
-*//*public Application getStatus(long orderId) {
-        return jdbcTemplate.queryForObject("select(order_id) from loan_order where orderId=?",new Object[]{orderId},  new BeanPropertyRowMapper<Application>());
-    }*//*
+    public Optional<?> getStatus(String orderId) {
+        var appl = jdbcTemplate.queryForStream("select status from loan_order where order_id = ?", new BeanPropertyRowMapper<>(TariffEntity.class), orderId).findFirst();
+        if (appl.isEmpty())
+            throw new LoanProcessException(ErrorCode.ORDER_NOT_FOUND, "Заявка не найдена");
+        else
+            return jdbcTemplate.query("select status from loan_order where order_id = ?", new BeanPropertyRowMapper<>(Application.class), orderId).stream().findFirst();
+    }
 
 
     public UUID supply(long tariffId, long userId) {
@@ -33,19 +41,38 @@ public class ApplicationRepoJDBC {
         if (tariffCheck.isEmpty())
             throw new LoanProcessException(ErrorCode.TARIFF_NOT_FOUND, "тариф не найден");
 
-        var userCheck = jdbcTemplate.queryForStream(SQL_FIND_BY_USER_ID, new BeanPropertyRowMapper<>(Application.class), userId).findFirst();
-
-//        jdbcTemplate.update("insert into loan_order values(1,?,?,?,?)", application.getUser_id(), application.getTariff_id(), user.getName(), user.getSurname());
+        else if (jdbcTemplate.query("select * from loan_order where (user_id = ?) and (tarrif_id = ?) and (status = ?)", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, IN_PROGRESS.name()).isEmpty()) {
+            throw new LoanProcessException(ErrorCode.LOAN_CONSIDERATION, "заявка на рассмотрении");
+        }
+        else if (jdbcTemplate.query("select * from loan_order where (user_id = ?) and (tarrif_id = ?) and (status = ?)", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, APPROVED.name()).isEmpty()) {
+            throw new LoanProcessException(ErrorCode.LOAN_ALREADY_APPROVED, "заявка одобрена");
+        }
+        else if (jdbcTemplate.query("select * from loan_order where (user_id = ?) and (tariff_id = ?) and (status = ?) and (if (case datediff(minute,time_update,now()))>2)", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, REFUSED.name()).isEmpty()) {
+            throw new LoanProcessException(ErrorCode.TRY_LATER, "попробуйте позже");
+        }
+        else {
+            UUID orderId = UUID.randomUUID();
+            double value = Math.random();
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            jdbcTemplate.query("insert into loan_order (id,order_id,user_id, tarrif_id, credit_rating, status, time_insert) values(1,?,?,?,?,?,?)", new BeanPropertyRowMapper<>(Application.class), orderId, userId, tariffId, value, IN_PROGRESS.name(), new Timestamp(System.currentTimeMillis()));
+            return orderId;
+        }
     }
 
-*//*
-  public void delete(long userId,long orderId) {
-        BeanPropertyRowMapper application = new BeanPropertyRowMapper<Application>();
-//        application.
-//        return jdbcTemplate.update("delete from loan_order WHERE id=?", id", new UserMapper());
-    }
-*//*
 
-}*/
+    public void delete(long userId, String orderId) {
+        var appl = jdbcTemplate.queryForStream("select status from loan_order where (user_id = ?) and (order_id = ?) ", new BeanPropertyRowMapper<>(TariffEntity.class), userId, orderId).findFirst();
+        if (appl.isEmpty())
+            throw new LoanProcessException(ErrorCode.ORDER_NOT_FOUND, "заявка не найдена");
+        if (appl.equals(IN_PROGRESS)){
+            throw new LoanProcessException(ErrorCode.ORDER_IMPOSSIBLE_TO_DELETE, "заявка не может быть удалена");
+        }
+        jdbcTemplate.update("delete from loan_order where (user_id = ?) and (order_id = ?) ",userId,orderId);
+
+
+    }
+
+
+}
 
 
