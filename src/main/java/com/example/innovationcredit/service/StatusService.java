@@ -23,7 +23,6 @@ public class StatusService {
 
     @Scheduled(initialDelayString = "${update-loan.initial-delay:2000}", fixedRateString = "${update-loan.rate:120000}")
     @Transactional
-//    @Async
     public void refreshPricingParameters() {
         logger.info("{} loan orders have been updated", jdbcTemplate.update("update loan_order" +
                 " set status = case (random() * 10)::int % 2 when 0 then ? else ? end," +

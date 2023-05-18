@@ -38,7 +38,7 @@ public class ApplicationRepoJDBC {
 
     public UUID supply(long tariffId, long userId) {
         var tariffCheck = jdbcTemplate.queryForStream(SQL_FIND_BY_TARIFF_ID, new BeanPropertyRowMapper<>(TariffEntity.class), tariffId).findFirst();
-        var orderCheck = jdbcTemplate.queryForStream(SQL_FIND_BY_ORDER_ID, new BeanPropertyRowMapper<>(Application.class), userId).findFirst();
+//        var orderCheck = jdbcTemplate.queryForStream(SQL_FIND_BY_ORDER_ID, new BeanPropertyRowMapper<>(Application.class), userId).findFirst();
 
         if (tariffCheck.isEmpty())
             throw new LoanProcessException(ErrorCode.TARIFF_NOT_FOUND, "тариф не найден");
@@ -49,26 +49,27 @@ public class ApplicationRepoJDBC {
          if (jdbcTemplate.query("select * from loan_order where (user_id = ?) and (tarrif_id = ?) and (status = ?)", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, APPROVED.name()).isEmpty()) {
             throw new LoanProcessException(ErrorCode.LOAN_ALREADY_APPROVED, "заявка одобрена");
         }
-//         if (jdbcTemplate.query("select * from loan_order where (user_id = ?) and (tarrif_id = ?) and (status = ?) and  ( TIMESTAMPDIFF(minute,time_update,now()) as   minutes) >2", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, REFUSED.name()).isEmpty()) {
+//         if (jdbcTemplate.queryForObject("select EXTRACT(EPOCH FROM (now() - time_update)) AS difference from loan_order where (user_id = ?) and (tarrif_id = ?) and (status = ?) ", new BeanPropertyRowMapper<>(Application.class), userId, tariffId, REFUSED.name()) < 120L) {
 //            throw new LoanProcessException(ErrorCode.TRY_LATER, "попробуйте позже");
 //        }
         else {
             UUID orderId = UUID.randomUUID();
             double value = Math.random();
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            jdbcTemplate.update("insert into loan_order (id,order_id,user_id, tarrif_id, credit_rating, status, time_insert,time_update) values(102,?,?,?,?,?,?,?)", orderId, userId, tariffId, value, IN_PROGRESS.name(), new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
+            long n = jdbcTemplate.queryForObject("SELECT id FROM loan_order ORDER BY id DESC LIMIT 1",new BeanPropertyRowMapper<>(Application.class)).getId();
+            jdbcTemplate.update("insert into loan_order (id,order_id,user_id, tarrif_id, credit_rating, status, time_insert,time_update) values(?,?,?,?,?,?,?,?)", ++n, orderId, userId, tariffId, value, IN_PROGRESS.name(), new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
             return orderId;
         }
     }
 
 
     public void delete(long userId, String orderId) {
-        var appl = jdbcTemplate.query("select status from loan_order where (user_id = ?) and (order_id = ?) ", new BeanPropertyRowMapper<>(TariffEntity.class), userId, orderId);
-        if (appl.isEmpty())
-            throw new LoanProcessException(ErrorCode.ORDER_NOT_FOUND, "заявка не найдена");
-        if (appl.equals(IN_PROGRESS)){
-            throw new LoanProcessException(ErrorCode.ORDER_IMPOSSIBLE_TO_DELETE, "заявка не может быть удалена");
-        }
+//        String appl = jdbcTemplate.queryForObject("select status from loan_order where (user_id = ?) and (order_id = ?) ", new BeanPropertyRowMapper<>(Application.class), userId, orderId).getStatus();
+//        if (appl!=null)
+//            throw new LoanProcessException(ErrorCode.ORDER_NOT_FOUND, "заявка не найдена");
+//        if (appl.equals(IN_PROGRESS)){
+//            throw new LoanProcessException(ErrorCode.ORDER_IMPOSSIBLE_TO_DELETE, "заявка не может быть удалена");
+//        }
         jdbcTemplate.update("delete from loan_order where (user_id = ?) and (order_id = ?) ",userId,orderId);
 
 
