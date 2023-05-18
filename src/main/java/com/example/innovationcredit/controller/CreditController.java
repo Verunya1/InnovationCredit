@@ -3,9 +3,12 @@ package com.example.innovationcredit.controller;
 import com.example.innovationcredit.api.response.DataResponse;
 import com.example.innovationcredit.api.response.StatusResponse;
 import com.example.innovationcredit.api.response.TariffListResponse;
+import com.example.innovationcredit.model.entity.Application;
 import com.example.innovationcredit.model.mapper.TariffMapperInterface;
 import com.example.innovationcredit.repository.ApplicationRepoJDBC;
 import com.example.innovationcredit.repository.TariffRepoJDBC;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +32,14 @@ public class CreditController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<DataResponse<?>> supply(@RequestParam(required = false) long userId,@RequestParam(required = false) long tariffId) {
-        UUID orderID = applicationRepoJDBC.supply(tariffId,userId);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<DataResponse<?>> supply(@Valid @RequestBody Application application) {
+        UUID orderID = applicationRepoJDBC.supply(application.getTariffId(),application.getUserId());
         return ResponseEntity.ok(new DataResponse<>(orderID));
     }
     @DeleteMapping("/deleteOrder")
-    public ResponseEntity<?> delete(@RequestParam(required = false) long userId,@RequestParam(required = false) String orderId){
-        applicationRepoJDBC.delete(userId,orderId);
+    public ResponseEntity<?> delete(@Valid @RequestBody Application application){
+        applicationRepoJDBC.delete(application.getUserId(),application.getOrderId());
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
