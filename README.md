@@ -48,6 +48,8 @@
 2) В заранее выбранную папку необходимо склонировать проект
    - Clone with SSH: git@github.com:Verunya1/InnovationCredit.git
    - Clone with HTTPS: https://github.com/Verunya1/InnovationCredit.git
-4) В терминале прописать команду docker-compose up 
+4) В терминале прописать команду docker run --name habr-pg-13.3 -p 5432:5432 -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=habrdb -d postgres:13.3
+
+
 
   
